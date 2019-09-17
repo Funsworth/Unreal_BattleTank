@@ -23,7 +23,7 @@ void ATankAIController::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEST("Cannot find player tank"));
+		UE_LOG(LogTemp, Warning, TEXT("Cannot find player tank"));
 	}
 }
 
