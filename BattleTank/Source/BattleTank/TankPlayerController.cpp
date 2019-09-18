@@ -30,20 +30,57 @@ void ATankPlayerController::AimTowardsCrossHair()
 		return;
 
 	FVector HitLocation = FVector::ZeroVector; //OUT parameter
-	UE_LOG(LogTemp, Warning, TEXT("Hit Location: %s"), *(HitLocation.ToString()));
-	GetSightRayHitLocation(HitLocation);
-	UE_LOG(LogTemp, Warning, TEXT("Hit Location: %s"), *(HitLocation.ToString()));
+	if (GetSightRayHitLocation(HitLocation))
+	{
+		GetControlledTank()->AimAt(HitLocation);
+	}
 
 	//get world location linetracing through crosshair
 	//if it hits the landscape
 		//tell controlled tank to aim at this point
 }
 
-bool ATankPlayerController::GetSightRayHitLocation(FVector &Out) const
+bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 {
-	Out.X = 5.0f;
-	
+	//Find the crosshair position
+	int32 ViewportSizeX, ViewportSizeY;
+	GetViewportSize(ViewportSizeX, ViewportSizeY);
+	FVector2D ScreenLocation = FVector2D(ViewportSizeX * CrossHairXLocation, ViewportSizeY * CrossHairYLocation);	
 
+	//Find the world direction of the crosshair
+	FVector LookDirection;
+	if (GetLookDirection(ScreenLocation, LookDirection))
+	{
+		//Line trace along that line
+		GetLookVectorHitLocation(LookDirection, HitLocation);		
+	}
+	return true;
+}
+
+//Takes in LookDirection and changes it to via DeprojectScreenPositionToWorld
+bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const
+{
+	FVector CameraWorldLocation;
+	return (DeprojectScreenPositionToWorld(ScreenLocation.X, ScreenLocation.Y, CameraWorldLocation, LookDirection));	
+}
+
+bool ATankPlayerController::GetLookVectorHitLocation(FVector& LookDirection, FVector& HitLocation) const
+{
+	FHitResult HitResult;
+	FVector Start = PlayerCameraManager->GetCameraLocation();
+	FVector End = Start + (LookDirection * LineTraceRange);	
+
+	if (GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		ECollisionChannel::ECC_Visibility))
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Hit Result: %s"), *(HitResult.Location.ToString()));
+		HitLocation = HitResult.Location;
+		return true;
+	}
+	HitLocation = FVector(0);
 	return false;
 }
 
