@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "TankBarrel.h"
 #include "TankAimingComponent.h"
 
 // Sets default values for this component's properties
@@ -13,7 +13,7 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
-void UTankAimingComponent::SetBarrelReference(UStaticMeshComponent* BarrelToSet)
+void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
 	Barrel = BarrelToSet;	
 }
@@ -37,7 +37,6 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
-
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
 	if (!Barrel)
@@ -46,14 +45,24 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	FVector OutLaunchVelocity = FVector(0);
 	FVector StartLocation = Barrel->GetSocketLocation(FName("BarrelEnd"));
 	
-	if (UGameplayStatics::SuggestProjectileVelocity(this, OutLaunchVelocity, StartLocation, HitLocation, LaunchSpeed, false, 0.0f, 0.0f, ESuggestProjVelocityTraceOption::DoNotTrace))
+	if (UGameplayStatics::SuggestProjectileVelocity(this, OutLaunchVelocity, StartLocation, HitLocation, LaunchSpeed, ESuggestProjVelocityTraceOption::DoNotTrace))
 	{
 		FVector AimDirection = OutLaunchVelocity.GetSafeNormal();
-		DrawDebugLine(GetWorld(), StartLocation, AimDirection * 1000, FColor(255, 0, 0), false, 0.0f, 0, 20.0f);
-		UE_LOG(LogTemp, Warning, TEXT("%s Launch Direction is: %s"), *(GetOwner()->GetName()), *(AimDirection.ToString()));
-	}
+		//DrawDebugLine(GetWorld(), StartLocation, AimDirection * 1000, FColor(255, 0, 0), false, 0.0f, 0, 20.0f);
+		//UE_LOG(LogTemp, Warning, TEXT("%s Launch Direction is: %s"), *(GetOwner()->GetName()), *(AimDirection.ToString()));
+		MoveBarrelTowards(AimDirection);
+	}	
+}
 
+void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
+{
+	//find difference between current barrel rotation and AimDirection
+	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotator = AimAsRotator - BarrelRotator;	
 	
+	Barrel->Elevate(5.0f);
+
 }
 
 
