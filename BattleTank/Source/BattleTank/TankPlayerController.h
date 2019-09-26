@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Tank.h"
+
 #include "CoreMinimal.h"
 #include "Engine/World.h"
 #include "CollisionQueryParams.h"
@@ -12,6 +12,9 @@
 /**
  * 
  */
+ //Forward Declaration
+class ATank;
+
 UCLASS()
 class BATTLETANK_API ATankPlayerController : public APlayerController
 {
