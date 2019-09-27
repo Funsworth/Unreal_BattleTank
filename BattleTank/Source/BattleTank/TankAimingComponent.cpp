@@ -67,11 +67,11 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		//UE_LOG(LogTemp, Warning, TEXT("%s Launch Direction is: %s"), *(GetOwner()->GetName()), *(AimDirection.ToString()));
 		MoveBarrelTowards(AimDirection);
 		MoveTurretTowards(AimDirection);
-		UE_LOG(LogTemp, Warning, TEXT("Aim solution"));
+		//UE_LOG(LogTemp, Warning, TEXT("Aim solution"));
 	}	
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No aim solution"));
+		//UE_LOG(LogTemp, Warning, TEXT("No aim solution"));
 	}
 }
 

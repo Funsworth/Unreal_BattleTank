@@ -21,6 +21,8 @@ public:
 	// Sets default values for this pawn's properties
 	ATank();
 	void AimAt(FVector HitLocation);
+	UFUNCTION(BlueprintCallable, Category = "PlayerControls")
+	void Fire();
 	UTankAimingComponent* TankAimingComponent = nullptr;
 
 	UFUNCTION(BlueprintCallable, Category = Setup)
